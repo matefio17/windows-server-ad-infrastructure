@@ -1,4 +1,4 @@
-# 🏢 Windows Server Active Directory Infrastructure - local.corp
+# 🏢 Windows Server Active Directory Infrastructure - corp.local
 
 
 
@@ -75,15 +75,21 @@ windows-server-ad-infrastructure/
 
 Środowisko zostało zaprojektowane jako rozproszona infrastruktura korporacyjna, podzielona na warstwy (Tiers) zgodnie z najlepszymi praktykami bezpieczeństwa Microsoft.
 
-### 🖥️ Maszyny Wirtualne
+### 🖥️ Maszyny Wirtualne (Lab Environment)
 
-| Hostname | Operating System | Role | IP Address | Resources |
+| Hostname | Rola | System Operacyjny | Adres IP | Zasoby (RAM/CPU) |
+| :--- | :--- | :--- | :--- | :--- |
+| **DC01** | Primary Domain Controller (AD DS, DNS, DHCP) | Windows Server 2022 | `192.168.0.106` | 4 vCPU, 8GB RAM |
+| **CLI-W11** | Management & Client Workstation | Windows 11 Pro | `DHCP` | 2 vCPU, 4GB RAM |
+| **SRV-LNX** | Linux Integration (SSSD, Samba, Sudo) | Ubuntu Server 22.04 | `DHCP` | 2 vCPU, 4GB RAM |
 
+**Hypervisor:** Oracle VirtualBox (Type 2)
 
-### 🌐 Network Configuration
-- **Domain Name:** `corp.local`
-- **Network Mode:** Bridged 
-- **Subnet:** `192.168.1.0/24`
+### 🌐 Konfiguracja Sieciowa
+- **Nazwa Domeny:** `corp.local` 
+- **Tryb Sieci:** Bridged (umożliwia widoczność serwera w sieci fizycznej i dostęp do Internetu).
+- **Adresacja:** Statyczna rezerwacja DHCP na routerze bazująca na adresie MAC kontrolera domeny.
+- **Brama domyślna:** `192.168.0.1`
 
 ### 🏗️ Struktura Logiczna (Organizational Units)
 Infrastruktura wykorzystuje logiczny podział zasobów, co pozwala na precyzyjne stosowanie polis GPO:
