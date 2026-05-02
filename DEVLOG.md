@@ -65,4 +65,37 @@ Dziennik postępów, decyzji projektowych i napotkanych trudności w budowie inf
 - Brak. Wszystkie operacje przebiegły zgodnie z planem.
 
 
+## [2026-05-02] - Narodziny domeny corp.local i promocja DC
 
+### 🏗️ Wykonane zadania:
+- **Instalacja roli AD DS:** Pomyślnie dodano rolę Active Directory Domain Services wraz z narzędziami administracyjnymi (RSAT) przez Server Manager.
+- **Konfiguracja DNS:** Zainstalowano rolę DNS Server jako integralną część infrastruktury domeny.
+- **Promocja do Domain Controller (DC):**
+    - Utworzono nowy las (New Forest) o nazwie `corp.local`.
+    - Skonfigurowano hasło DSRM (Directory Services Restore Mode).
+    - Przeprowadzono pomyślną walidację wymagań wstępnych (Prerequisites Check).
+- **Weryfikacja post-instalacyjna:**
+    - Sprawdzono działanie usługi Netlogon.
+    - Wykonano test diagnostyczny: `dcdiag /test:NetLogon` (wynik: Passed).
+    - Zweryfikowano strukturę stref w DNS Managerze.
+
+### 🧠 Decyzje i przemyślenia:
+- **Przejście na pełną statyczną adresację:** Chociaż wcześniej stosowałem rezerwację DHCP, na etapie promocji DC ręcznie skonfigurowałem IPv4 `192.168.0.106` w systemie.
+    - **Uzasadnienie:** Kontroler domeny nie może polegać na zewnętrznym serwerze DHCP (np. domowym routerze). W przypadku awarii routera, usługi AD i DNS na serwerze mogłyby nie wystartować poprawnie, paraliżując całą sieć.
+- **Konfiguracja DNS Loopback:** Jako preferowany serwer DNS ustawiłem adres lokalny (`127.0.0.1`). Jest to kluczowe, aby DC01 odpytywał samego siebie o rekordy domeny `corp.local`.
+- **Zignorowanie ostrzeżenia o delegacji DNS:** Podczas konfiguracji pojawił się komunikat o braku możliwości utworzenia delegacji DNS. Zdecydowałem się kontynuować, ponieważ w przypadku tworzenia nowego lasu z końcówką `.local` (strefa niepubliczna), nie istnieje nadrzędny serwer DNS, który mógłby taką delegację przyjąć.
+
+### 🚩 Napotkane problemy:
+- **Długi czas restartu po promocji:** Pierwsze uruchomienie po podniesieniu do roli DC trwało znacznie dłużej (konfiguracja bazy NTDS i zabezpieczeń).
+    - **Wniosek:** Cierpliwość jest kluczowa przy pierwszej konfiguracji usług katalogowych – system musi zainicjować strukturę bazy danych i polisy bezpieczeństwa.
+
+
+- Problem: Wykonanie polecenia dcdiag /test:netlogon zwracało błąd test not found.
+
+- Przyczyna: Narzędzie dcdiag wymaga ścisłego dopasowania do wewnętrznej listy testów. Parametr odpowiadający za weryfikację logowania sieciowego musi zostać podany w liczbie mnogiej.
+
+- Rozwiązanie: Zmieniono składnię na dcdiag /test:NetLogons.
+
+- Wynik: Test został rozpoznany i zakończony statusem Passed, co potwierdziło poprawną konfigurację usługi Netlogon oraz replikacji udziałów SYSVOL i NETLOGON.
+
+---
