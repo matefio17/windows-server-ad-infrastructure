@@ -43,7 +43,7 @@ Projekt koncentruje się na budowie, hardeningu i automatyzacji środowiska Acti
 
 Poniższa struktura odzwierciedla organizację zasobów projektu, zapewniając przejrzystość dokumentacji oraz łatwość zarządzania skryptami automatyzacji.
 
-```text
+
 
 
 windows-server-ad-infrastructure/
