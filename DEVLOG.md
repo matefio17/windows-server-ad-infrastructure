@@ -99,3 +99,24 @@ Dziennik postępów, decyzji projektowych i napotkanych trudności w budowie inf
 - Wynik: Test został rozpoznany i zakończony statusem Passed, co potwierdziło poprawną konfigurację usługi Netlogon oraz replikacji udziałów SYSVOL i NETLOGON.
 
 ---
+
+# [2026-05-03] - Projektowanie architektury logicznej i hardening struktury OU
+
+### 🏗️ Wykonane zadania:
+- **Inicjalizacja Root OU:** Utworzono główną jednostkę organizacyjną `OU=CORP` bezpośrednio pod korzeniem domeny `corp.local`.
+- **Wdrożenie modelu Tiered Administration:**
+    - Skonfigurowano `OU=Admin_Accounts` z podziałem na warstwy: `Tier 0` (High Privilege), `Tier 1` (Server Admin) oraz `Tier 2` (Workstation Admin/Helpdesk).
+- **Strukturyzacja zasobów produkcyjnych:**
+    - `OU=Employees`: Utworzono hierarchię działów (Finance, HR, IT, Sales) dla precyzyjnego przypisywania polis GPO.
+    - `OU=Servers` oraz `OU=Workstations`: Przygotowano kontenery pod separację polityk hardeningu dla różnych typów systemów.
+- **Zabezpieczenie obiektów:** Zweryfikowano i aktywowano flagę ochrony przed przypadkowym usunięciem dla kluczowych jednostek.
+
+### 🧠 Decyzje i przemyślenia:
+- **Separacja od domyślnych kontenerów:** Zdecydowano o nieużywaniu wbudowanych kontenerów `Users` i `Computers` dla zasobów firmowych.
+    - **Uzasadnienie:** Domyślne kontenery nie obsługują bezpośredniego przypisywania polis GPO. Własna struktura pod `OU=CORP` pozwala na czyste zarządzanie, łatwiejszą delegację uprawnień i czytelną synchronizację z usługami chmurowymi.
+- **Zastosowanie Modelu Warstwowego (Tiering):** Wprowadzenie podziału na Tier 0-2 to klucz do bezpieczeństwa poświadczeń. Zapobiega to logowaniu się wysoko uprawnionych kont na mniej bezpiecznych stacjach roboczych, co drastycznie ogranicza ryzyko kradzieży danych logowania (np. ataki Pass-the-Hash).
+
+### 🚩 Napotkane problemy:
+- **Ukryta zakładka "Object" we właściwościach OU:** Początkowo brak możliwości odnalezienia opcji wyłączenia ochrony przed przypadkowym usunięciem we właściwościach jednostki organizacyjnej.
+    - **Rozwiązanie:** Należało przejść do menu **View** w konsoli *Active Directory Users and Computers* i włączyć opcję **Advanced Features**. Dopiero ten tryb odblokowuje zaawansowane zakładki, w tym zakładkę *Object*.
+    - **Wniosek:** Standardowy widok ADUC jest uproszczony; administracja strukturą i bezpieczeństwem wymaga pracy w trybie rozszerzonym.
