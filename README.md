@@ -63,7 +63,7 @@ windows-server-ad-infrastructure/
 ├── .gitignore                  # Wykluczenia plików tymczasowych
 └── README.md                   # Ten plik
 
-
+```
 
 
 
